@@ -37,12 +37,17 @@ private:
     void refresh() override;
     void refresh_list();
     void refresh_edit();
+    void refresh_rename();
 
     lv_obj_t* header_{nullptr};
     lv_obj_t* empty_{nullptr};
     std::array<PackRow, kVisibleRows> rows_{};
     std::array<FieldRow, model::kPackFieldCount> fields_{};
     lv_obj_t* hint_{nullptr};
+    lv_obj_t* rename_box_{nullptr};
+    lv_obj_t* rename_title_{nullptr};
+    lv_obj_t* rename_text_{nullptr};
+    lv_obj_t* rename_hint_{nullptr};
 };
 
 } // namespace screen

@@ -112,7 +112,10 @@ enum class PackStatus {
     Retire = 2,
 };
 
+inline constexpr size_t kMaxPackName = 8;
+
 struct Pack {
+    std::string name;  // label stuck on the battery, e.g. "6S-03" (A-Z 0-9 - #)
     Chem chem = Chem::LiPo;
     int cells = 6;
     int capacity_index = 6;
@@ -129,8 +132,15 @@ struct LogState {
     bool editing = false;
     int field = 0;
     bool delete_armed = false;
+    bool renaming = false;
+    std::string draft;
 
     void move(int delta);
+    void start_rename();
+    void rename_input(char c);
+    void rename_backspace();
+    void commit_rename();
+    void cancel_rename();
     void add_pack();
     void delete_selected();
     void adjust_cycles(int delta);

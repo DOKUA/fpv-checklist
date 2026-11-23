@@ -184,6 +184,25 @@ void key_event_cb(lv_event_t* event) {
 
 #if !USE_DESKTOP
 uint32_t map_evdev_key(uint16_t code) {
+    // Letters and digits (evdev codes follow the physical QWERTY layout, not ASCII order).
+    static constexpr struct {
+        uint16_t code;
+        char ch;
+    } kChars[] = {
+        {KEY_A, 'a'}, {KEY_B, 'b'}, {KEY_C, 'c'}, {KEY_D, 'd'}, {KEY_E, 'e'}, {KEY_F, 'f'}, {KEY_G, 'g'},
+        {KEY_H, 'h'}, {KEY_I, 'i'}, {KEY_J, 'j'}, {KEY_K, 'k'}, {KEY_L, 'l'}, {KEY_M, 'm'}, {KEY_N, 'n'},
+        {KEY_O, 'o'}, {KEY_P, 'p'}, {KEY_Q, 'q'}, {KEY_R, 'r'}, {KEY_S, 's'}, {KEY_T, 't'}, {KEY_U, 'u'},
+        {KEY_V, 'v'}, {KEY_W, 'w'}, {KEY_X, 'x'}, {KEY_Y, 'y'}, {KEY_Z, 'z'},
+        {KEY_0, '0'}, {KEY_1, '1'}, {KEY_2, '2'}, {KEY_3, '3'}, {KEY_4, '4'},
+        {KEY_5, '5'}, {KEY_6, '6'}, {KEY_7, '7'}, {KEY_8, '8'}, {KEY_9, '9'},
+        {KEY_MINUS, '-'}, {KEY_SPACE, ' '},
+    };
+    for (const auto& entry : kChars) {
+        if (entry.code == code) {
+            return static_cast<uint32_t>(entry.ch);
+        }
+    }
+
     switch (code) {
         case KEY_ESC:
             return LV_KEY_ESC;
@@ -198,28 +217,10 @@ uint32_t map_evdev_key(uint16_t code) {
         case KEY_ENTER:
         case KEY_KPENTER:
             return LV_KEY_ENTER;
-        case KEY_SPACE:
-            return ' ';
-        case KEY_F:
-            return 'f';
-        case KEY_X:
-            return 'x';
-        case KEY_T:
-            return 't';
-        case KEY_Z:
-            return 'z';
-        case KEY_C:
-            return 'c';
-        case KEY_4:
-            return '4';
-        case KEY_5:
-            return '5';
-        case KEY_6:
-            return '6';
-        case KEY_7:
-            return '7';
-        case KEY_8:
-            return '8';
+        case KEY_BACKSPACE:
+            return LV_KEY_BACKSPACE;
+        case KEY_DELETE:
+            return LV_KEY_DEL;
         case KEY_SYSRQ:
             return kKeyPrintScreen;
         case KEY_HELP:

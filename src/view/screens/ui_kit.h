@@ -15,10 +15,30 @@ inline lv_obj_t* label(lv_obj_t* parent, const lv_font_t* font, int32_t x, int32
     lv_obj_set_style_text_font(l, font, 0);
     lv_obj_set_pos(l, x, y);
     if (width > 0) {
-        lv_obj_set_width(l, width);
+        // Single line: fixed height so LONG_DOT truncates with "..." instead of wrapping.
+        lv_obj_set_size(l, width, lv_font_get_line_height(font));
         lv_label_set_long_mode(l, LV_LABEL_LONG_DOT);
     }
     return l;
+}
+
+// Change font of a single-line label and keep its height in sync.
+inline void set_font(lv_obj_t* l, const lv_font_t* font) {
+    lv_obj_set_style_text_font(l, font, 0);
+    if (lv_label_get_long_mode(l) != LV_LABEL_LONG_WRAP) {
+        lv_obj_set_height(l, lv_font_get_line_height(font));
+    }
+}
+
+// Multi-line label that wraps within its width.
+inline void wrap(lv_obj_t* l) {
+    lv_label_set_long_mode(l, LV_LABEL_LONG_WRAP);
+    lv_obj_set_height(l, LV_SIZE_CONTENT);
+}
+
+// Single line that scrolls (marquee) when the text is too long.
+inline void marquee(lv_obj_t* l, bool on) {
+    lv_label_set_long_mode(l, on ? LV_LABEL_LONG_SCROLL_CIRCULAR : LV_LABEL_LONG_DOT);
 }
 
 inline lv_obj_t* box(lv_obj_t* parent, int32_t x, int32_t y, int32_t w, int32_t h, int32_t radius = 4) {

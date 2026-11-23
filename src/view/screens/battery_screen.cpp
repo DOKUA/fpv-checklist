@@ -56,7 +56,7 @@ void BatteryScreen::build_content(lv_obj_t* content) {
     }
 
     note_ = ui::label(content, font(10), kSide + 2, kBodyTop + 48, kFieldW - 4);
-    lv_label_set_long_mode(note_, LV_LABEL_LONG_WRAP);
+    ui::wrap(note_);
 
     card_ = ui::box(content, kCardX, kBodyTop, kCardW, kCardH, 6);
     for (auto& line : lines_) {
@@ -87,8 +87,9 @@ void BatteryScreen::refresh() {
     ui::outline(card_, colors.border, 1);
     for (auto* line : lines_) {
         ui::show(line, false);
+        ui::marquee(line, false);
         ui::text_color(line, colors.text);
-        lv_obj_set_style_text_font(line, font(12), 0);
+        ui::set_font(line, font(12));
     }
     for (auto* v : vals_) {
         ui::show(v, false);
@@ -170,7 +171,7 @@ void BatteryScreen::refresh_charge() {
     char v2[16];
 
     ui::show(lines_[0], true);
-    lv_obj_set_style_text_font(lines_[0], font(12, true), 0);
+    ui::set_font(lines_[0], font(12, true));
     lv_obj_set_pos(lines_[0], 6, 3);
     lv_label_set_text(lines_[0], b.cells == 1 ? tr("1S charger", "1S зарядка") : tr("Balance charge", "Баланс-заряд"));
 
@@ -202,14 +203,15 @@ void BatteryScreen::refresh_charge() {
     lv_label_set_text(lines_[2], buf);
 
     ui::show(lines_[3], true);
-    lv_obj_set_style_text_font(lines_[3], font(10, true), 0);
+    ui::set_font(lines_[3], font(10, true));
     lv_obj_set_pos(lines_[3], 6, 72);
+    ui::marquee(lines_[3], true);
     if (r > 10) {
-        lv_label_set_text(lines_[3], tr(">1C: more heat & wear", ">1C: більше нагріву й зносу"));
+        lv_label_set_text(lines_[3], tr(">1C: more heat & wear", ">1C: нагрів і знос"));
         ui::text_color(lines_[3], colors.warning);
     }
     else if (b.cells == 1) {
-        lv_label_set_text(lines_[3], tr("Use a dedicated 1S charger", "Краще окрема 1S зарядка"));
+        lv_label_set_text(lines_[3], tr("Use a 1S charger", "Краще 1S зарядка"));
         ui::text_color(lines_[3], colors.info);
     }
     else {
@@ -260,7 +262,7 @@ void BatteryScreen::refresh_check() {
     lv_obj_align(vals_[1], LV_ALIGN_TOP_RIGHT, -6, 28);
 
     ui::show(lines_[0], true);
-    lv_obj_set_style_text_font(lines_[0], font(14, true), 0);
+    ui::set_font(lines_[0], font(14, true));
     lv_obj_set_pos(lines_[0], 6, 44);
     lv_label_set_text(lines_[0], status.text);
     ui::text_color(lines_[0], status.color);
@@ -273,7 +275,7 @@ void BatteryScreen::refresh_check() {
     ui::text_color(lines_[1], colors.text_disabled);
 
     ui::show(lines_[2], true);
-    lv_obj_set_style_text_font(lines_[2], font(10), 0);
+    ui::set_font(lines_[2], font(10));
     lv_obj_set_pos(lines_[2], 6, 74);
     if (chem.land_lo_cv == chem.land_hi_cv) {
         lv_snprintf(buf, sizeof(buf), "%s %d.%02dV", tr("Lower limit ~", "Нижня межа ~"), chem.land_lo_cv / 100,
@@ -296,7 +298,7 @@ void BatteryScreen::refresh_info() {
 
     // Header
     ui::show(lines_[4], true);
-    lv_obj_set_style_text_font(lines_[4], font(10), 0);
+    ui::set_font(lines_[4], font(10));
     lv_obj_set_pos(lines_[4], 6, 2);
     lv_snprintf(buf, sizeof(buf), "%s / %dS", tr("per cell", "на банку"), b.cells);
     lv_label_set_text(lines_[4], buf);

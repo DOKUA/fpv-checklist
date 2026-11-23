@@ -1,7 +1,7 @@
 {
   "app_name": "FPV Checklist",
   "package_name": "fpv-checklist",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Pre-flight checklist and LiPo calculator for FPV pilots",
 
   "store": {

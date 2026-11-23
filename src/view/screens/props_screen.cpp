@@ -42,8 +42,8 @@ void PropsScreen::build_content(lv_obj_t* content) {
     }
 
     header_ = ui::label(content, font(20, true), kPanelX, 0, kPanelW);
-    variant_ = ui::label(content, font(12, true), kPanelX, 27, kPanelW - 36);
-    pager_ = ui::label(content, font(10), kPanelX + kPanelW - 34, 29, 34);
+    variant_ = ui::label(content, font(12, true), kPanelX, 27, kPanelW - 46);
+    pager_ = ui::label(content, font(10), kPanelX + kPanelW - 46, 29, 46);
     lv_obj_set_style_text_align(pager_, LV_TEXT_ALIGN_RIGHT, 0);
     for (int i = 0; i < kDetailRows; ++i) {
         keys_[i] = ui::label(content, font(10), kPanelX, 47 + i * 15, 66);
@@ -65,7 +65,7 @@ void PropsScreen::refresh() {
         const bool selected = first + r == st.size;
         lv_label_set_text(row.size, p.label);
         if (p.label[std::strlen(p.label) - 1] == 'm') lv_label_set_text_fmt(row.mm, "%d.%d\"", p.tenth_inch / 10, p.tenth_inch % 10);
-        else lv_label_set_text_fmt(row.mm, "%d mm", p.mm);
+        else lv_label_set_text_fmt(row.mm, "%d", p.mm);
         ui::select_style(row.box, colors.primary, selected);
         ui::text_color(row.size, selected ? colors.primary : colors.text);
         ui::text_color(row.mm, selected ? colors.primary : colors.text_disabled);
@@ -77,7 +77,7 @@ void PropsScreen::refresh() {
     else lv_label_set_text_fmt(header_, "%s = %d mm", p.label, p.mm);
     ui::text_color(header_, colors.primary);
 
-    const char* keys[kDetailRows] = {tr("Motor", "Мотор"), "KV", tr("Battery", "Батарея"), tr("Dry weight", "Вага без АКБ")};
+    const char* keys[kDetailRows] = {tr("Motor", "Мотор"), "KV", tr("Battery", "Батарея"), tr("Dry weight", "Вага")};
     if (p.count == 0) {
         lv_label_set_text(variant_, tr("No build data", "Немає даних збірки"));
         ui::text_color(variant_, colors.text_disabled);
@@ -107,6 +107,7 @@ void PropsScreen::refresh() {
         lv_label_set_text(keys_[i], keys[i]);
         if (i == 2 && v.battery[0] != '-' && v.battery[0] != 'L') lv_label_set_text_fmt(values_[i], "%s mAh", v.battery);
         else lv_label_set_text(values_[i], values[i]);
+        ui::marquee(values_[i], i == 0);  // motor lists can be long
         ui::text_color(keys_[i], colors.text_disabled);
         ui::text_color(values_[i], colors.text);
     }

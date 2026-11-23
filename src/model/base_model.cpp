@@ -312,6 +312,34 @@ void LogState::move(int delta) {
     }
 }
 
+void LogState::start_rename() {
+    if (auto* p = current()) {
+        renaming = true;
+        delete_armed = false;
+        draft = p->name;
+    }
+}
+
+void LogState::rename_input(char c) {
+    if (c >= 'a' && c <= 'z') c = static_cast<char>(c - 'a' + 'A');
+    const bool allowed = (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '#';
+    if (allowed && draft.size() < kMaxPackName) draft.push_back(c);
+}
+
+void LogState::rename_backspace() {
+    if (!draft.empty()) draft.pop_back();
+}
+
+void LogState::commit_rename() {
+    if (auto* p = current()) p->name = draft;
+    renaming = false;
+}
+
+void LogState::cancel_rename() {
+    renaming = false;
+    draft.clear();
+}
+
 void LogState::add_pack() {
     delete_armed = false;
     if (static_cast<int>(packs.size()) >= kMaxPacks) {
@@ -320,6 +348,7 @@ void LogState::add_pack() {
     Pack pack = packs.empty() ? Pack{} : packs[selected];  // copy spec of the selected pack
     pack.cycles = 0;
     pack.status = PackStatus::Ok;
+    pack.name.clear();
     packs.push_back(pack);
     selected = static_cast<int>(packs.size()) - 1;
 }
@@ -446,7 +475,7 @@ std::string BaseModel::serialize() const {
     out << "log_sel=" << log.selected << '\n';
     for (const auto& p : log.packs) {
         out << "pack=" << static_cast<int>(p.chem) << ',' << p.cells << ',' << p.capacity_index << ',' << p.cycles
-            << ',' << static_cast<int>(p.status) << '\n';
+            << ',' << static_cast<int>(p.status) << ',' << p.name << '\n';
     }
     return out.str();
 }
@@ -502,6 +531,12 @@ void BaseModel::deserialize(const std::string& text) {
             std::istringstream parts(val);
             std::string item;
             for (int i = 0; i < 5 && std::getline(parts, item, ','); ++i) f[i] = std::atoi(item.c_str());
+            if (std::getline(parts, item, ',')) {
+                for (char c : item) {
+                    const bool ok = (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '#';
+                    if (ok && p.name.size() < kMaxPackName) p.name.push_back(c);
+                }
+            }
             p.chem = static_cast<Chem>(std::clamp(f[0], 0, kChemCount - 1));
             p.cells = std::clamp(f[1], kMinCells, kMaxCells);
             p.capacity_index = std::clamp(f[2], 0, capacity_count() - 1);

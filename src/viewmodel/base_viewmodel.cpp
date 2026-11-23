@@ -71,6 +71,7 @@ AppPage BaseViewModel::current_page() const {
 void BaseViewModel::show_page(AppPage page) {
     model_.set_current_page(page);
     model_.log.editing = false;
+    model_.log.renaming = false;
     current_page_subject_.set(page_to_int(page));
     changed();
 }
@@ -118,6 +119,17 @@ bool BaseViewModel::on_key(uint32_t key) {
     const bool select = key == LV_KEY_ENTER || key == ' ';
     const int dx = left ? -1 : right ? 1 : 0;
     const int dy = up ? -1 : down ? 1 : 0;
+
+    // Typing a pack ID in the battery log swallows every key.
+    if (model_.current_page() == AppPage::Log && model_.log.renaming) {
+        auto& log = model_.log;
+        if (key == LV_KEY_ENTER) log.commit_rename();
+        else if (key == LV_KEY_ESC) log.cancel_rename();
+        else if (key == LV_KEY_BACKSPACE || key == LV_KEY_DEL) log.rename_backspace();
+        else if (key >= 32 && key < 127) log.rename_input(static_cast<char>(key));
+        changed();
+        return true;
+    }
 
     if (key == 't' || key == 'T') {
         toggle_dark_mode();
@@ -239,7 +251,10 @@ void BaseViewModel::nav_press(size_t index) {
             break;
         case AppPage::Log:
             if (index == 1) m.log.add_pack();
-            if (index == 2 && !m.log.packs.empty()) { m.log.editing = !m.log.editing; m.log.field = 0; }
+            if (index == 2) {
+                if (m.log.renaming) m.log.commit_rename();
+                else m.log.start_rename();
+            }
             if (index == 3) m.log.adjust_cycles(1);
             if (index == 4) m.log.delete_selected();
             break;
@@ -282,7 +297,7 @@ std::array<HelpRow, 5> BaseViewModel::help_rows() const {
         case AppPage::Log:
             return {{{"F X", tr("Select pack", "Вибрати пак")},
                      {"Z C / 7", tr("Cycles -/+", "Цикли -/+")},
-                     {"ENTER / 6", tr("Edit pack", "Редагувати")},
+                     {"ENTER / 6", tr("Edit / name (ID)", "Редагувати / назва (ID)")},
                      {"5  /  8 8", tr("Add / delete", "Додати / видалити")},
                      {"ESC / 4", tr("Menu", "Меню")}}};
     }

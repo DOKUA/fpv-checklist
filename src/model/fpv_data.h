@@ -112,7 +112,7 @@ struct ChemInfo {
 
 inline constexpr std::array<ChemInfo, kChemCount> kChems = {{
     {"LiPo", 420, 380, 385, 350, 360, 300,
-     {"Never LiHV mode for LiPo!", "Ніколи не LiHV для LiPo!"}},
+     {"No LiHV mode on LiPo!", "НЕ режим LiHV для LiPo!"}},
     {"LiHV", 435, 380, 385, 350, 360, 300,
      {"Only LiHV-rated packs!", "Лише для паків LiHV!"}},
     {"Li-ion", 420, 0, 0, 300, 300, 280,

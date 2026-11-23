@@ -13,6 +13,7 @@
 #endif
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #ifndef APP_NAME
@@ -31,10 +32,10 @@ namespace app {
 namespace {
 
 #if !USE_DESKTOP
-constexpr const char* kNotoSansCjkRegular =
-    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc";
-constexpr const char* kNotoSansCjkBold =
-    "/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc";
+// DejaVu Sans covers the full Cyrillic block incl. Ukrainian Є І Ї Ґ
+// (Noto Sans CJK on the device only has the Russian subset).
+constexpr const char* kDejaVuSans = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+constexpr const char* kDejaVuSansBold = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf";
 #endif
 
 bool path_exists(const std::filesystem::path& path) {
@@ -167,17 +168,18 @@ lv_font_t* AssetManager::load_font(const std::filesystem::path& file_name, uint3
 
 lv_font_t* AssetManager::load_standard_font(uint32_t size, StandardFontWeight weight) {
 #if USE_DESKTOP
-    // Desktop simulator: use a macOS system font with Cyrillic coverage (not bundled).
-    const char* path = weight == StandardFontWeight::Regular
-                           ? "/System/Library/Fonts/Supplemental/Arial.ttf"
-                           : "/System/Library/Fonts/Supplemental/Arial Bold.ttf";
+    // Desktop simulator: same DejaVu Sans as the device (copied into tools/fonts,
+    // not packaged), so text width matches the real screen.
+    const std::string dev_font = std::string(APP_DEV_FONT_DIR) +
+                                 (weight == StandardFontWeight::Regular ? "/DejaVuSans.ttf" : "/DejaVuSans-Bold.ttf");
+    const char* path = dev_font.c_str();
     if (!path_exists(path)) {
         return nullptr;
     }
 #else
     const char* path = weight == StandardFontWeight::Regular
-                           ? kNotoSansCjkRegular
-                           : kNotoSansCjkBold;
+                           ? kDejaVuSans
+                           : kDejaVuSansBold;
 #endif
     auto* font = load_font(path, size);
     if (font) {
