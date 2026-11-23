@@ -2,22 +2,29 @@
   "app_name": "FPV Checklist",
   "package_name": "fpv-checklist",
   "version": "0.2.1",
-  "description": "Pre-flight checklist and LiPo calculator for FPV pilots",
-
+  "description": "FPV pilot toolkit: checklists, battery charging, channel planner, props, battery log",
   "store": {
-    "summary": "Pre-flight checklist and LiPo battery calculator for FPV drone pilots",
-    "description": "Pocket companion for FPV flying. Three checklists - Bench (before leaving home), Field (before takeoff) and Post-flight - with progress per list, saved between launches. The LiPo calculator shows per-cell voltage, estimated charge, battery status (full / storage / land now) and expected flight time from pack size and average current. Works fully offline, keyboard only: F/X to move, Enter to check, Z/C to switch lists.",
-    "categories": ["Lifestyle", "Hardware & IoT"],
+    "summary": "FPV pilot toolkit: checklists, battery charging, channel planner, props, battery log",
+    "description": "Pocket field tool for FPV pilots. Checklists: bench, field, post-flight and crash inspection. Battery: charger settings for LiPo / LiHV / Li-ion (end voltage, current at 0.5-2C), per-cell voltage check with charge estimate and land/storage status, voltage reference. Channels: 5.8 GHz spectrum of analog bands, DJI V1/Avatar, O3, O4 and HDZero with overlap view, group presets for 2-6 pilots and IMD check. Props: 31 mm to 20 inch in millimetres with typical motor, KV and battery. Battery log: pack IDs matching your labels, cycle counter and condition. Offline, keyboard only, English and Ukrainian. Reference data from Oscar Liang (oscarliang.com) and the DJI O4 manual.",
+    "categories": [
+      "Lifestyle",
+      "Hardware & IoT"
+    ],
     "screenshots": [
-      "screenshot/checklist-light.png",
-      "screenshot/checklist-field-light.png",
-      "screenshot/lipo-light.png",
-      "screenshot/lipo-dark.png"
+      "screenshot/menu.png",
+      "screenshot/checklist.png",
+      "screenshot/battery-charge.png",
+      "screenshot/channels.png",
+      "screenshot/props.png",
+      "screenshot/battery-log.png"
     ],
     "icon": "assets/images/fpv-checklist_256.png",
     "license": "MIT",
     "source_repo": "https://github.com/DOKUA/fpv-checklist",
-    "author": { "github": "DOKUA", "display_name": "Andrusevych" },
+    "author": {
+      "github": "DOKUA",
+      "display_name": "Andrusevych"
+    },
     "share_code": "FPVC",
     "permissions": {
       "camera": false,
@@ -27,6 +34,11 @@
       "additional_hardware": false,
       "background_service": false,
       "external_display": false
+    },
+    "locales": {
+      "uk": {
+        "summary": "Помічник FPV-пілота: чеклісти, зарядка батарей, канали, пропелери, журнал батарей"
+      }
     }
   }
 }
