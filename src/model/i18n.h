@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — tiny two-language (EN / UA) helper.
+ * FPV Toolkit — tiny two-language (EN / UA) helper.
  *
  * SPDX-License-Identifier: MIT
  */

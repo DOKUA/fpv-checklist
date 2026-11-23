@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — home menu (tile grid).
+ * FPV Toolkit — home menu (tile grid).
  *
  * SPDX-License-Identifier: MIT
  */

@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — tiny helpers for building screens.
+ * FPV Toolkit — tiny helpers for building screens.
  *
  * SPDX-License-Identifier: MIT
  */

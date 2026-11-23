@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — 5.8GHz channel spectrum with overlap and IMD check.
+ * FPV Toolkit — 5.8GHz channel spectrum with overlap and IMD check.
  *
  * Every system is one row; each channel is drawn as a pill whose width is the
  * channel bandwidth on a shared frequency axis (like Oscar Liang's chart).

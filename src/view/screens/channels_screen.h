@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — 5.8GHz channel spectrum with overlap and IMD check.
+ * FPV Toolkit — 5.8GHz channel spectrum with overlap and IMD check.
  *
  * SPDX-License-Identifier: MIT
  */

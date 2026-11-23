@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — static reference data.
+ * FPV Toolkit — static reference data.
  *
  * Sources (checked Nov 2026):
  *  - Batteries / charging: oscarliang.com/lipo-battery-guide/,

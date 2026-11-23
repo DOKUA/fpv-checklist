@@ -1,5 +1,5 @@
 [Unit]
-Description=@APP_DISPLAY_NAME@
+Description=@APP_LAUNCHER_NAME@
 After=multi-user.target
 
 [Service]

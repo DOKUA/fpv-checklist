@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — propeller sizes (mm) and typical builds.
+ * FPV Toolkit — propeller sizes (mm) and typical builds.
  *
  * SPDX-License-Identifier: MIT
  */

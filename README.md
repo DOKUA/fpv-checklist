@@ -76,14 +76,14 @@ The device runs Debian 13 (trixie) arm64. The package is built in a matching Doc
 
 ```shell
 brew install colima docker && colima start --arch aarch64
-./scripts/build-deb.sh          # -> dist/FPVChecklist_<version>_rev1_arm64.deb
+./scripts/build-deb.sh          # -> dist/FPVToolkit_<version>_rev1_arm64.deb
 ```
 
 Install on the device:
 
 ```shell
-scp dist/FPVChecklist_*_arm64.deb <user>@<device-ip>:~/
-ssh -t <user>@<device-ip> 'sudo apt install -y ./FPVChecklist_*_arm64.deb'
+scp dist/FPVToolkit_*_arm64.deb <user>@<device-ip>:~/
+ssh -t <user>@<device-ip> 'sudo apt install -y ./FPVToolkit_*_arm64.deb'
 ```
 
 The app then appears in the CardputerZero launcher.

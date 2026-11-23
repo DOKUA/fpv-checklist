@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — checklist page.
+ * FPV Toolkit — checklist page.
  *
  * SPDX-License-Identifier: MIT
  */

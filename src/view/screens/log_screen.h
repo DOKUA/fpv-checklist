@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — battery log: packs, cycles, condition.
+ * FPV Toolkit — battery log: packs, cycles, condition.
  *
  * SPDX-License-Identifier: MIT
  */

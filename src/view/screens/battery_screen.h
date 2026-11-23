@@ -1,5 +1,5 @@
 /*
- * FPV Checklist — battery page: charger settings, voltage check, reference.
+ * FPV Toolkit — battery page: charger settings, voltage check, reference.
  *
  * SPDX-License-Identifier: MIT
  */

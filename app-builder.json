@@ -1,7 +1,7 @@
 {
-  "app_name": "FPV Checklist",
+  "app_name": "FPV Toolkit",
   "package_name": "fpv-checklist",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "FPV pilot toolkit: checklists, battery charging, channel planner, props, battery log",
   "store": {
     "summary": "FPV pilot toolkit: checklists, battery charging, channel planner, props, battery log",
