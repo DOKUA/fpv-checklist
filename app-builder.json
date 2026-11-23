@@ -1,0 +1,32 @@
+{
+  "app_name": "FPV Checklist",
+  "package_name": "fpv-checklist",
+  "version": "0.1.0",
+  "description": "Pre-flight checklist and LiPo calculator for FPV pilots",
+
+  "store": {
+    "summary": "Pre-flight checklist and LiPo battery calculator for FPV drone pilots",
+    "description": "Pocket companion for FPV flying. Three checklists - Bench (before leaving home), Field (before takeoff) and Post-flight - with progress per list, saved between launches. The LiPo calculator shows per-cell voltage, estimated charge, battery status (full / storage / land now) and expected flight time from pack size and average current. Works fully offline, keyboard only: F/X to move, Enter to check, Z/C to switch lists.",
+    "categories": ["Lifestyle", "Hardware & IoT"],
+    "screenshots": [
+      "screenshot/checklist-light.png",
+      "screenshot/checklist-field-light.png",
+      "screenshot/lipo-light.png",
+      "screenshot/lipo-dark.png"
+    ],
+    "icon": "assets/images/fpv-checklist_256.png",
+    "license": "MIT",
+    "source_repo": "https://github.com/DOKUA/fpv-checklist",
+    "author": { "github": "DOKUA", "display_name": "Andrusevych" },
+    "share_code": "TODO",
+    "permissions": {
+      "camera": false,
+      "microphone": false,
+      "imu": false,
+      "network": false,
+      "additional_hardware": false,
+      "background_service": false,
+      "external_display": false
+    }
+  }
+}
