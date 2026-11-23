@@ -48,7 +48,6 @@ std::filesystem::path weakly_canonical_path(const std::filesystem::path& path) {
     return ec ? path.lexically_normal() : canonical;
 }
 
-#if !USE_DESKTOP
 const lv_font_t* fallback_font(uint32_t size) {
     if (size <= 10) {
         return &lv_font_montserrat_10;
@@ -73,7 +72,6 @@ const lv_font_t* fallback_font(uint32_t size) {
     }
     return &lv_font_montserrat_28;
 }
-#endif
 
 } // namespace
 
@@ -169,19 +167,23 @@ lv_font_t* AssetManager::load_font(const std::filesystem::path& file_name, uint3
 
 lv_font_t* AssetManager::load_standard_font(uint32_t size, StandardFontWeight weight) {
 #if USE_DESKTOP
-    LV_UNUSED(size);
-    LV_UNUSED(weight);
-    return nullptr;
+    // Desktop simulator: use a macOS system font with Cyrillic coverage (not bundled).
+    const char* path = weight == StandardFontWeight::Regular
+                           ? "/System/Library/Fonts/Supplemental/Arial.ttf"
+                           : "/System/Library/Fonts/Supplemental/Arial Bold.ttf";
+    if (!path_exists(path)) {
+        return nullptr;
+    }
 #else
     const char* path = weight == StandardFontWeight::Regular
                            ? kNotoSansCjkRegular
                            : kNotoSansCjkBold;
+#endif
     auto* font = load_font(path, size);
     if (font) {
         font->fallback = fallback_font(size);
     }
     return font;
-#endif
 }
 
 void AssetManager::add_root_if_valid(std::filesystem::path path) {

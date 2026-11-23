@@ -11,9 +11,15 @@
 
 #include "lvgl.h"
 
+#include <array>
 #include <string>
 
 namespace viewmodel {
+
+struct HelpRow {
+    const char* key;
+    const char* action;
+};
 
 class BaseViewModel {
 public:
@@ -26,10 +32,8 @@ public:
     lv_subject_t* title_subject();
     lv_subject_t* dark_mode_subject();
     lv_subject_t* current_page_subject();
-    // Revision counters: bumped whenever checklist / LiPo state changes,
-    // screens observe them and redraw.
-    lv_subject_t* checklist_subject();
-    lv_subject_t* lipo_subject();
+    // Revision counter: bumped on every state change; screens observe it and redraw.
+    lv_subject_t* state_subject();
     lv_subject_t* quit_requested_subject();
 
     const model::BaseModel& model() const;
@@ -37,37 +41,32 @@ public:
     bool is_dark_mode() const;
     void set_dark_mode(bool enabled);
     void toggle_dark_mode();
+    void toggle_language();
 
     model::AppPage current_page() const;
-    void show_checklist_page();
-    void show_lipo_page();
-    void toggle_page();
+    void show_page(model::AppPage page);
+    void show_menu();
     void request_quit();
 
-    // Checklist actions
-    void move_selection(int delta);
-    void toggle_selected();
-    void switch_list(int delta);
-    void reset_active_list();
+    // Keyboard: letters/arrows/Enter for the current page. Returns true if handled.
+    bool on_key(uint32_t key);
+    // Bottom bar (keys 4..8).
+    std::array<const char*, 5> nav_icons() const;
+    void nav_press(size_t index);
+    std::array<HelpRow, 5> help_rows() const;
 
-    // LiPo actions
-    void move_lipo_field(int delta);
-    void adjust_lipo_field(int delta);
-
-    // Persistence
     std::string save_state() const;
     void load_state(const std::string& text);
 
 private:
-    void publish_all();
-    void bump(reactive::IntSubject& subject);
+    void changed();
+    bool menu_key(uint32_t key, int dx, int dy, bool select);
 
     model::BaseModel model_;
-    reactive::StringSubject<32> title_subject_;
+    reactive::StringSubject<48> title_subject_;
     reactive::BoolSubject dark_mode_subject_;
     reactive::IntSubject current_page_subject_;
-    reactive::IntSubject checklist_subject_;
-    reactive::IntSubject lipo_subject_;
+    reactive::IntSubject state_subject_;
     reactive::BoolSubject quit_requested_subject_;
 };
 

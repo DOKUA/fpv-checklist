@@ -14,30 +14,7 @@
 #include <cstddef>
 
 namespace view::widgets {
-namespace {
 
-struct HelpRow {
-    const char* key;
-    const char* action;
-};
-
-constexpr std::array<HelpRow, 5> kChecklistRows = {{
-    {"F X / UP DOWN", "Move"},
-    {"ENTER / SPACE", "Check item"},
-    {"Z C / 5 7", "Switch list"},
-    {"6  /  8", "Reset list / LiPo"},
-    {"HOLD ESC / T", "Exit / theme"},
-}};
-
-constexpr std::array<HelpRow, 5> kLipoRows = {{
-    {"F X / 6", "Select field"},
-    {"Z C / 5 7", "Decrease / increase"},
-    {"ESC / 4", "Back to checklist"},
-    {"T / 8", "Light / dark"},
-    {"FN + H", "Toggle help"},
-}};
-
-} // namespace
 
 HelpPopup::HelpPopup(lv_obj_t* parent,
                      viewmodel::BaseViewModel& view_model,
@@ -158,18 +135,19 @@ bool HelpPopup::visible() const {
 }
 
 void HelpPopup::update_rows(model::AppPage page) {
-    const bool lipo = page == model::AppPage::Lipo;
-    lv_label_set_text(page_badge_, lipo ? "LIPO" : "CHECKLIST");
+    LV_UNUSED(page);
+    lv_label_set_text(title_, model::tr("Keyboard help", "Клавіші"));
+    lv_label_set_text(page_badge_, view_model_.model().app_title());
+    const auto rows = view_model_.help_rows();
     for (std::size_t i = 0; i < rows_.size(); ++i) {
-        const bool row_visible = i < kChecklistRows.size();
+        const bool row_visible = rows[i].key && rows[i].action && (rows[i].key[0] || rows[i].action[0]);
         if (!row_visible) {
             lv_obj_add_flag(rows_[i].row, LV_OBJ_FLAG_HIDDEN);
             continue;
         }
         lv_obj_remove_flag(rows_[i].row, LV_OBJ_FLAG_HIDDEN);
-        const auto& row = lipo ? kLipoRows[i] : kChecklistRows[i];
-        lv_label_set_text(rows_[i].key, row.key);
-        lv_label_set_text(rows_[i].action, row.action);
+        lv_label_set_text(rows_[i].key, rows[i].key);
+        lv_label_set_text(rows_[i].action, rows[i].action);
     }
 }
 

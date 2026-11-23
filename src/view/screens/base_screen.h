@@ -29,12 +29,18 @@ public:
 
     void init();
     lv_obj_t* root() const;
+    void refresh_now();
 
 protected:
     virtual void build_content(lv_obj_t* content) = 0;
 
     viewmodel::BaseViewModel& view_model();
     app::AssetManager& assets();
+    // Standard UI font (Cyrillic-capable) with built-in Montserrat as fallback.
+    const lv_font_t* font(uint32_t size, bool bold = false);
+    // Redraw content whenever app state or theme changes.
+    void observe_state(lv_obj_t* obj);
+    virtual void refresh() {}
 
 private:
     viewmodel::BaseViewModel& view_model_;

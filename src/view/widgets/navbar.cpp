@@ -51,6 +51,7 @@ void NavBar::build() {
     // Observers are bound to core_obj_ and removed automatically with it.
     reactive::observe_obj(core_obj_, view_model_.current_page_subject(), update_icons_cb, this);
     reactive::observe_obj(core_obj_, view_model_.dark_mode_subject(), update_icons_cb, this);
+    reactive::observe_obj(core_obj_, view_model_.state_subject(), update_icons_cb, this);
 }
 
 void NavBar::create_icon_buttons() {
@@ -82,44 +83,17 @@ void NavBar::create_icon_buttons() {
 }
 
 void NavBar::update_icon_buttons() {
-    const bool lipo = view_model_.current_page() == model::AppPage::Lipo;
-    const char* theme_icon = view_model_.is_dark_mode() ? ICON_SUN : ICON_MOON;
-
-    //                                       key 4          5                  6               7                8
-    const std::array<const char*, 5> checklist = {ICON_SIGN_OUT, ICON_CARET_LEFT, ICON_RESET, ICON_CARET_RIGHT, ICON_BATTERY};
-    const std::array<const char*, 5> lipo_page = {ICON_LIST_CHECKS, ICON_MINUS, ICON_CARET_UP_DOWN, ICON_PLUS, theme_icon};
-
-    const auto& icons = lipo ? lipo_page : checklist;
+    const auto icons = view_model_.nav_icons();
     for (size_t i = 0; i < icon_buttons_.size(); ++i) {
         if (icon_buttons_[i]) {
             icon_buttons_[i]->set_text(icons[i]);
-            icon_buttons_[i]->set_enabled(true);
+            icon_buttons_[i]->set_enabled(icons[i][0] != '\0');
         }
     }
 }
 
 void NavBar::on_button(size_t index) {
-    auto& vm = view_model_;
-    if (vm.current_page() == model::AppPage::Checklist) {
-        switch (index) {
-            case 0: vm.request_quit(); break;
-            case 1: vm.switch_list(-1); break;
-            case 2: vm.reset_active_list(); break;
-            case 3: vm.switch_list(+1); break;
-            case 4: vm.show_lipo_page(); break;
-            default: break;
-        }
-        return;
-    }
-
-    switch (index) {
-        case 0: vm.show_checklist_page(); break;
-        case 1: vm.adjust_lipo_field(-1); break;
-        case 2: vm.move_lipo_field(+1); break;
-        case 3: vm.adjust_lipo_field(+1); break;
-        case 4: vm.toggle_dark_mode(); break;
-        default: break;
-    }
+    view_model_.nav_press(index);
 }
 
 void NavBar::button_clicked_cb(lv_event_t* event) {

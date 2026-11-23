@@ -42,6 +42,18 @@ constexpr const char* ICON_CARET_RIGHT        = "\uE13A";
 constexpr const char* ICON_CARET_UP_DOWN      = "\uE140";
 constexpr const char* ICON_LIST_CHECKS        = "\uEADC";
 constexpr const char* ICON_DRONE              = "\uED74";
+constexpr const char* ICON_ARROW_LEFT         = "\uE058";
+constexpr const char* ICON_CARET_UP           = "\uE13C";
+constexpr const char* ICON_CARET_DOWN         = "\uE136";
+constexpr const char* ICON_CHECK_CIRCLE       = "\uE184";
+constexpr const char* ICON_BROADCAST          = "\uE0F2";
+constexpr const char* ICON_FAN                = "\uE9F2";
+constexpr const char* ICON_NOTEBOOK           = "\uE34E";
+constexpr const char* ICON_TRANSLATE          = "\uE4A2";
+constexpr const char* ICON_PLUS_CIRCLE        = "\uE3D6";
+constexpr const char* ICON_PENCIL             = "\uE3B4";
+constexpr const char* ICON_TRASH              = "\uE4A6";
+constexpr const char* ICON_USERS              = "\uE68E";
 
 namespace color {
 

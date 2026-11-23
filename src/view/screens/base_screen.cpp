@@ -64,4 +64,36 @@ app::AssetManager& BaseScreen::assets() {
     return assets_;
 }
 
+const lv_font_t* BaseScreen::font(uint32_t size, bool bold) {
+    const lv_font_t* f = assets_.load_standard_font(
+        size, bold ? app::StandardFontWeight::Bold : app::StandardFontWeight::Regular);
+    if (f) {
+        return f;
+    }
+    if (size <= 10) return &lv_font_montserrat_10;
+    if (size <= 12) return &lv_font_montserrat_12;
+    if (size <= 14) return &lv_font_montserrat_14;
+    if (size <= 16) return &lv_font_montserrat_16;
+    if (size <= 20) return &lv_font_montserrat_20;
+    return &lv_font_montserrat_24;
+}
+
+namespace {
+void screen_state_cb(lv_observer_t* observer, lv_subject_t*) {
+    auto* screen = static_cast<BaseScreen*>(lv_observer_get_user_data(observer));
+    if (screen) {
+        screen->refresh_now();
+    }
+}
+} // namespace
+
+void BaseScreen::observe_state(lv_obj_t* obj) {
+    reactive::observe_obj(obj, view_model_.state_subject(), screen_state_cb, this);
+    reactive::observe_obj(obj, view_model_.dark_mode_subject(), screen_state_cb, this);
+}
+
+void BaseScreen::refresh_now() {
+    refresh();
+}
+
 } // namespace screen

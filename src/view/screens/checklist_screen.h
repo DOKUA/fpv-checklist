@@ -26,10 +26,9 @@ private:
     };
 
     void build_content(lv_obj_t* content) override;
-    void refresh();
-    static void changed_cb(lv_observer_t* observer, lv_subject_t* subject);
+    void refresh() override;
 
-    std::array<lv_obj_t*, 3> tabs_{};
+    std::array<lv_obj_t*, model::kChecklists.size()> tabs_{};
     lv_obj_t* progress_{nullptr};
     std::array<Row, kVisibleRows> rows_{};
     lv_obj_t* scroll_hint_{nullptr};

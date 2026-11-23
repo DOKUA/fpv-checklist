@@ -7,34 +7,141 @@
 #pragma once
 
 #include "fpv_data.h"
+#include "i18n.h"
 
 #include <array>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace model {
 
 enum class AppPage {
-    Checklist = 0,
-    Lipo      = 1,
+    Menu      = 0,
+    Checklist = 1,
+    Battery   = 2,
+    Channels  = 3,
+    Props     = 4,
+    Log       = 5,
 };
+inline constexpr int kMenuItemCount = 6;  // 5 tools + language tile
 
-enum class LipoField {
-    Cells    = 0,
-    Voltage  = 1,
-    Capacity = 2,
-    Current  = 3,
+// ------------------------------------------------------------------ Battery
+
+enum class BatteryView {
+    Charge = 0,
+    Check  = 1,
+    Info   = 2,
 };
-constexpr int kLipoFieldCount = 4;
+inline constexpr int kBatteryViewCount = 3;
 
-enum class LipoStatus {
+enum class BatteryStatus {
     Overcharged,
     Full,
-    Good,
+    Ready,
     Storage,
     Low,
     Critical,
 };
+
+struct BatteryState {
+    BatteryView view = BatteryView::Charge;
+    int field = 0;
+    Chem chem = Chem::LiPo;
+    int cells = 6;
+    int capacity_index = 6;  // 1300 mAh
+    int rate_index = 1;      // 1C
+    int pack_cv = 2310;      // centivolts
+    int current_a = 25;
+
+    static int field_count(BatteryView view);
+    void move_field(int delta);
+    void adjust(int delta);
+    void switch_view(int delta);
+
+    const ChemInfo& chem_info() const;
+    int capacity_mah() const;
+    int rate_tenths() const;      // 5 / 10 / 20 => 0.5C / 1C / 2C
+    int charge_current_ma() const;
+    int cell_cv() const;
+    int charge_percent() const;
+    int flight_time_s() const;
+    BatteryStatus status() const;
+    void clamp_voltage();
+};
+
+// ------------------------------------------------------------------ Channels
+
+struct ChannelState {
+    int sys = kSysR;
+    int ch = 0;
+    int preset = -1;
+    std::vector<ChannelRef> marked;
+
+    void move_system(int delta);
+    void move_channel(int delta);
+    void toggle_mark();
+    void next_preset();
+    void clear_marks();
+    bool is_marked(int sys, int ch) const;
+    int freq10() const;
+    const ChannelSystem& system() const;
+};
+
+// Two channels overlap when centres are closer than half their bandwidths combined.
+bool channels_overlap(const ChannelRef& a, const ChannelRef& b);
+int channel_freq10(const ChannelRef& ref);
+// Finds an IMD hit (2*f1 - f2 landing inside a third marked channel). Returns false if clean.
+bool find_imd(const std::vector<ChannelRef>& marked, ChannelRef& f1, ChannelRef& f2, ChannelRef& victim);
+
+// ------------------------------------------------------------------ Props
+
+struct PropsState {
+    int size = 8;  // 5"
+    int variant = 0;
+
+    void move_size(int delta);
+    void move_variant(int delta);
+};
+
+// ------------------------------------------------------------------ Battery log
+
+enum class PackStatus {
+    Ok = 0,
+    Watch = 1,
+    Retire = 2,
+};
+
+struct Pack {
+    Chem chem = Chem::LiPo;
+    int cells = 6;
+    int capacity_index = 6;
+    int cycles = 0;
+    PackStatus status = PackStatus::Ok;
+};
+
+inline constexpr int kMaxPacks = 24;
+inline constexpr int kPackFieldCount = 5;
+
+struct LogState {
+    std::vector<Pack> packs;
+    int selected = 0;
+    bool editing = false;
+    int field = 0;
+    bool delete_armed = false;
+
+    void move(int delta);
+    void add_pack();
+    void delete_selected();
+    void adjust_cycles(int delta);
+    void adjust_field(int delta);
+    Pack* current();
+};
+
+int capacity_at(int index);
+int capacity_count();
+
+// ------------------------------------------------------------------ Model
 
 class BaseModel {
 public:
@@ -42,16 +149,20 @@ public:
 
     const char* app_title() const;
 
-    bool dark_mode() const;
-    void set_dark_mode(bool enabled);
-    void toggle_dark_mode();
+    bool dark_mode() const { return dark_mode_; }
+    void set_dark_mode(bool enabled) { dark_mode_ = enabled; }
+    void toggle_dark_mode() { dark_mode_ = !dark_mode_; }
 
-    AppPage current_page() const;
-    void set_current_page(AppPage page);
-    void toggle_page();
+    AppPage current_page() const { return current_page_; }
+    void set_current_page(AppPage page) { current_page_ = page; }
 
-    // ---- Checklists -------------------------------------------------------
-    int active_list() const;
+    void toggle_language();
+
+    // Menu
+    int menu_index = 0;
+
+    // Checklists
+    int active_list() const { return active_list_; }
     void switch_list(int delta);
     const ChecklistDef& active_def() const;
     int selected_item() const;
@@ -62,37 +173,21 @@ public:
     int checked_count(int list) const;
     bool list_complete(int list) const;
 
-    // ---- LiPo calculator --------------------------------------------------
-    LipoField lipo_field() const;
-    void move_lipo_field(int delta);
-    void adjust_lipo_field(int delta);
+    BatteryState battery;
+    ChannelState channels;
+    PropsState props;
+    LogState log;
 
-    int cells() const;
-    int pack_centivolts() const;        // 2310 == 23.10 V
-    int cell_centivolts() const;        // per-cell voltage, rounded
-    int capacity_mah() const;
-    int current_amps() const;
-    int charge_percent() const;         // resting-voltage estimate, 0..100
-    int flight_time_seconds() const;    // 80 % usable capacity at avg current
-    LipoStatus lipo_status() const;
-
-    // ---- Persistence ------------------------------------------------------
     std::string serialize() const;
     void deserialize(const std::string& text);
 
 private:
     bool dark_mode_ = false;
-    AppPage current_page_ = AppPage::Checklist;
+    AppPage current_page_ = AppPage::Menu;
 
     int active_list_ = 0;
     std::array<int, kChecklists.size()> selected_{};
-    std::array<uint32_t, kChecklists.size()> checked_{};  // bit mask per list
-
-    LipoField lipo_field_ = LipoField::Voltage;
-    int cells_ = 6;
-    int pack_centivolts_ = 2310;
-    int capacity_index_ = 6;  // 1300 mAh
-    int current_amps_ = 25;
+    std::array<uint32_t, kChecklists.size()> checked_{};
 };
 
 } // namespace model

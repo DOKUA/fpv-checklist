@@ -223,7 +223,7 @@ private:
         const bool is_escape = key == LV_KEY_ESC;
         const bool is_home_exit_key =
             key == '4' &&
-            ((!long_pressed && view_model_.current_page() == model::AppPage::Checklist) ||
+            ((!long_pressed && view_model_.current_page() == model::AppPage::Menu) ||
              (long_pressed && exit_key_pressed_ == key));
         if (!is_escape && !is_home_exit_key) {
             return false;
@@ -237,7 +237,7 @@ private:
         }
         else {
             exit_key_pressed_ = key;
-            exit_armed_ = view_model_.current_page() == model::AppPage::Checklist;
+            exit_armed_ = view_model_.current_page() == model::AppPage::Menu;
             if (exit_armed_) {
                 toast_->show_persistent_highlighted("Hold ",
                                                     "ESC",
@@ -248,40 +248,13 @@ private:
         return true;
     }
 
-    // F/X (up/down), Z/C (left/right), Enter/Space, T — the CardputerZero
-    // convention lets letter keys act as arrows without holding Fn.
+    // Letters, arrows, Enter and T/L go to the view model (page-specific).
+    // CardputerZero convention: F/Z/X/C act as arrows without holding Fn.
     bool handle_page_key(uint32_t key, bool long_pressed) {
-        const bool up = key == 'f' || key == 'F' || key == LV_KEY_UP;
-        const bool down = key == 'x' || key == 'X' || key == LV_KEY_DOWN;
-        const bool left = key == 'z' || key == 'Z' || key == LV_KEY_LEFT;
-        const bool right = key == 'c' || key == 'C' || key == LV_KEY_RIGHT;
-        const bool select = key == LV_KEY_ENTER || key == ' ';
-        const bool theme = key == 't' || key == 'T';
-        if (!(up || down || left || right || select || theme)) {
-            return false;
-        }
         if (long_pressed) {
-            return true;
+            return key != LV_KEY_ESC && key != '4';
         }
-
-        if (theme) {
-            view_model_.toggle_dark_mode();
-        }
-        else if (view_model_.current_page() == model::AppPage::Checklist) {
-            if (up) view_model_.move_selection(-1);
-            if (down) view_model_.move_selection(+1);
-            if (left) view_model_.switch_list(-1);
-            if (right) view_model_.switch_list(+1);
-            if (select) view_model_.toggle_selected();
-        }
-        else {
-            if (up) view_model_.move_lipo_field(-1);
-            if (down) view_model_.move_lipo_field(+1);
-            if (left) view_model_.adjust_lipo_field(-1);
-            if (right) view_model_.adjust_lipo_field(+1);
-            if (select) view_model_.move_lipo_field(+1);
-        }
-        return true;
+        return view_model_.on_key(key);
     }
 
     void handle_release(uint32_t key) {
@@ -292,8 +265,8 @@ private:
         if (exit_armed_) {
             toast_->hide();
         } else if (key == LV_KEY_ESC &&
-                   view_model_.current_page() == model::AppPage::Lipo) {
-            view_model_.show_checklist_page();
+                   view_model_.current_page() != model::AppPage::Menu) {
+            view_model_.show_menu();
         }
         exit_key_pressed_ = 0;
         exit_armed_ = false;
@@ -450,9 +423,7 @@ int Application::run() {
                                                         &dark_mode_persistence);
 
     load_state(view_model);
-    auto* checklist_save_observer =
-        lv_subject_add_observer(view_model.checklist_subject(), save_state_observer, &view_model);
-    auto* lipo_save_observer = lv_subject_add_observer(view_model.lipo_subject(), save_state_observer, &view_model);
+    auto* save_observer = lv_subject_add_observer(view_model.state_subject(), save_state_observer, &view_model);
 
     bool running = true;
 #if USE_DESKTOP
@@ -483,8 +454,7 @@ int Application::run() {
     if (dark_mode_observer) {
         lv_observer_remove(dark_mode_observer);
     }
-    lv_observer_remove(checklist_save_observer);
-    lv_observer_remove(lipo_save_observer);
+    lv_observer_remove(save_observer);
 
     return 0;
 }

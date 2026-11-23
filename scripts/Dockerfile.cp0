@@ -1,0 +1,9 @@
+# Build environment matching CardputerZero (Debian 13 trixie, arm64).
+FROM debian:trixie
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential cmake ninja-build git ca-certificates pkg-config dpkg-dev file \
+        libpng-dev libjpeg-dev libfmt-dev libfreetype-dev zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src

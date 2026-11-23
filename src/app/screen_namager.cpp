@@ -6,8 +6,12 @@
 
 #include "screen_manager.h"
 
+#include "battery_screen.h"
+#include "channels_screen.h"
 #include "checklist_screen.h"
-#include "lipo_screen.h"
+#include "log_screen.h"
+#include "menu_screen.h"
+#include "props_screen.h"
 
 namespace app {
 namespace {
@@ -53,15 +57,19 @@ void ScreenManager::start() {
                                                          nullptr);
 }
 
-void ScreenManager::show_checklist_screen() {
-    load_screen(std::make_unique<screen::ChecklistScreen>(view_model_, assets_));
-    loaded_page_ = model::AppPage::Checklist;
-    has_loaded_page_ = true;
-}
-
-void ScreenManager::show_lipo_screen() {
-    load_screen(std::make_unique<screen::LipoScreen>(view_model_, assets_));
-    loaded_page_ = model::AppPage::Lipo;
+void ScreenManager::show_page_screen(model::AppPage page) {
+    using model::AppPage;
+    std::unique_ptr<screen::BaseScreen> next;
+    switch (page) {
+        case AppPage::Menu: next = std::make_unique<screen::MenuScreen>(view_model_, assets_); break;
+        case AppPage::Checklist: next = std::make_unique<screen::ChecklistScreen>(view_model_, assets_); break;
+        case AppPage::Battery: next = std::make_unique<screen::BatteryScreen>(view_model_, assets_); break;
+        case AppPage::Channels: next = std::make_unique<screen::ChannelsScreen>(view_model_, assets_); break;
+        case AppPage::Props: next = std::make_unique<screen::PropsScreen>(view_model_, assets_); break;
+        case AppPage::Log: next = std::make_unique<screen::LogScreen>(view_model_, assets_); break;
+    }
+    load_screen(std::move(next));
+    loaded_page_ = page;
     has_loaded_page_ = true;
 }
 
@@ -82,12 +90,7 @@ void ScreenManager::flush_requested_page() {
         return;
     }
 
-    if (requested_page_ == model::AppPage::Lipo) {
-        show_lipo_screen();
-        return;
-    }
-
-    show_checklist_screen();
+    show_page_screen(requested_page_);
 }
 
 lv_obj_t* ScreenManager::current_screen() const {
