@@ -4,7 +4,7 @@
   "version": "0.2.2",
   "description": "FPV pilot toolkit: checklists, battery charging, channel planner, props, battery log",
   "store": {
-    "summary": "FPV pilot toolkit: checklists, battery charging, channel planner, props, battery log",
+    "summary": "FPV pilot toolkit: checklists, LiPo charging, channels, props, battery log",
     "description": "Pocket field tool for FPV pilots. Checklists: bench, field, post-flight and crash inspection. Battery: charger settings for LiPo / LiHV / Li-ion (end voltage, current at 0.5-2C), per-cell voltage check with charge estimate and land/storage status, voltage reference. Channels: 5.8 GHz spectrum of analog bands, DJI V1/Avatar, O3, O4 and HDZero with overlap view, group presets for 2-6 pilots and IMD check. Props: 31 mm to 20 inch in millimetres with typical motor, KV and battery. Battery log: pack IDs matching your labels, cycle counter and condition. Offline, keyboard only, English and Ukrainian. Reference data from Oscar Liang (oscarliang.com) and the DJI O4 manual.",
     "categories": [
       "Lifestyle",
@@ -37,7 +37,7 @@
     },
     "locales": {
       "uk": {
-        "summary": "Помічник FPV-пілота: чеклісти, зарядка батарей, канали, пропелери, журнал батарей"
+        "summary": "Помічник FPV-пілота: чеклісти, зарядка, канали, пропи, журнал батарей"
       }
     }
   }
